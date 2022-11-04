@@ -375,10 +375,10 @@
 .manage-inventory-table {
   height: 40%;
   overflow: auto;
+  border: 2px solid lightgray;
 }
 
 .manage-inventory-table table {
-  border: 2px solid lightgray;
   background-color: var(--white);
   width: 100%;
   border-collapse: collapse;

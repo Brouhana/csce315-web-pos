@@ -10,7 +10,7 @@ function Manage() {
           <br />
           <ManageSideNav />
         </Col>
-        <Col>
+        <Col md={9}>
           <br />
           <Outlet />
         </Col>
