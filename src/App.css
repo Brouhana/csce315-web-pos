@@ -369,3 +369,36 @@
     transform: rotate(360deg);
   }
 }
+
+/* Inventory Table */
+
+.manage-inventory-table {
+  height: 40%;
+  overflow: auto;
+}
+
+.manage-inventory-table table {
+  border: 2px solid lightgray;
+  background-color: var(--white);
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.manage-inventory-table tr:nth-child(even) {
+  background-color: var(--gray-0);
+}
+
+.manage-inventory-table th {
+  background-color: var(--secondary);
+  color: var(--white);
+  border-bottom: 1px solid var(--gray);
+  text-align: left;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+}
+
+.manage-inventory-table td {
+  text-align: left;
+  padding: 10px;
+}
