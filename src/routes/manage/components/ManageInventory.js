@@ -17,7 +17,7 @@ function ManageInventory() {
     return await axios.get(`${SERVER_URL}/ingredients`)
   }
 
-  const { data } = useQuery(
+  const { data: ingredientsRes } = useQuery(
     'ingredients',
     fetchIngredients,
   )
@@ -36,14 +36,14 @@ function ManageInventory() {
   }
   const theme = useTheme([materialTheme, customTheme])
 
-  if (data) {
-    const ingredientsData = { nodes: data.data }
+  if (ingredientsRes) {
+    const ingredientsData = { nodes: ingredientsRes.data }
 
     return (
       <>
         <HeaderMedium>Inventory</HeaderMedium>
 
-        <div className="manage-inventory-table">
+        <div className="manage-table">
           <CompactTable columns={columns} data={ingredientsData} theme={theme} layout={{ fixedHeader: true }} />
         </div>
       </>

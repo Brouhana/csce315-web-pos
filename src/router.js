@@ -5,6 +5,7 @@ import Login from './routes/Login'
 import Checkout from './routes/checkout/Checkout'
 import CheckoutMenu from './routes/checkout/components/CheckoutMenu'
 import Manage from './routes/manage/Manage'
+import ManageSales from './routes/manage/components/ManageSales'
 import ManageInventory from './routes/manage/components/ManageInventory'
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
     path: '/manage',
     element: <Manage />,
     children: [
+      {
+        path: '/manage/sales',
+        element: <ManageSales />,
+      },
       {
         path: '/manage/inventory',
         element: <ManageInventory />,
