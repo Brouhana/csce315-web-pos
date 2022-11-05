@@ -373,32 +373,7 @@
 /* Inventory Table */
 
 .manage-inventory-table {
-  height: 40%;
+  height: 30%;
   overflow: auto;
-  border: 2px solid lightgray;
-}
-
-.manage-inventory-table table {
-  background-color: var(--white);
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.manage-inventory-table tr:nth-child(even) {
-  background-color: var(--gray-0);
-}
-
-.manage-inventory-table th {
-  background-color: var(--secondary);
-  color: var(--white);
-  border-bottom: 1px solid var(--gray);
-  text-align: left;
-  padding: 10px;
-  position: sticky;
-  top: 0;
-}
-
-.manage-inventory-table td {
-  text-align: left;
-  padding: 10px;
+  border: 2px solid var(--gray);
 }
