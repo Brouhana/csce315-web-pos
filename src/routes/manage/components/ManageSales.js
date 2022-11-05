@@ -5,8 +5,14 @@ import { useQuery } from 'react-query'
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme'
 import { DEFAULT_OPTIONS, getTheme } from '@table-library/react-table-library/material-ui'
+import { usePagination } from '@table-library/react-table-library/pagination';
+import { Stack, TablePagination } from '@mui/material';
+import { useState } from "react";
+import Button from "../../../components/Button";
 
 function ManageSales() {
+  const [isLoading, setIsLoading] = useState(false)
+
   const fetchMenuItems = async () => {
     return await axios.get(`${SERVER_URL}/menu`)
   }
@@ -79,22 +85,68 @@ function ManageSales() {
         background-color: var(--gray-0);
       }
     `,
+    HeaderCell: `
+      
+    `,
   }
   const theme = useTheme([materialTheme, customTheme])
 
-  if (salesRes) {
-    const salesData = { nodes: salesRes.data }
+  const [ salesData, setSalesData ] = useState({ nodes: [] })
 
-    return (
-      <>
-        <HeaderMedium>Sales</HeaderMedium>
+  const pagination = usePagination(salesData, {
+    state: {
+      page: 0,
+      size: 7,
+    },
+    onChange: onPaginationChange,
+  })
 
-        <div className="manage-table">
-          <CompactTable columns={columns} data={salesData} theme={theme} layout={{ custom: true, fixedHeader: true }} />
-        </div>
-      </>
-    )
+  function onPaginationChange(action, state) {
+    console.log(action, state);
   }
+
+  function renderTable() {
+    setIsLoading(true)
+
+    if (salesRes) {
+      setSalesData({ nodes: salesRes.data })
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <HeaderMedium>Sales</HeaderMedium>
+
+      <div className="manage-table">
+        <CompactTable columns={columns} data={salesData} theme={theme} layout={{ custom: true, fixedHeader: true }} pagination={pagination} />
+      </div>
+
+      <br />
+        <Stack spacing={10}>
+          <TablePagination
+            count={salesData.nodes.length}
+            page={pagination.state.page}
+            rowsPerPage={pagination.state.size}
+            rowsPerPageOptions={[1, 2, 5, 7]}
+            onRowsPerPageChange={(event) =>
+              pagination.fns.onSetSize(parseInt(event.target.value, 10))
+            }
+            onPageChange={(event, page) => pagination.fns.onSetPage(page)}
+          />
+        </Stack>
+      <br />
+
+      <Button
+        size="lg"
+        fullWidth
+        isLoading={isLoading}
+        onClick={() => renderTable()}
+      >
+        Render Table
+      </Button>
+    </>
+  )
 }
 
 export default ManageSales

@@ -26,6 +26,7 @@ function ManageInventory() {
   const customTheme = {
     Table: `
       --data-table-library_grid-template-columns: 50% 25% 25%;
+      height: 480px;
     `,
     HeaderRow: `
       background-color: var(--secondary);
