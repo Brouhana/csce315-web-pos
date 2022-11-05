@@ -24,6 +24,9 @@ function ManageInventory() {
 
   const materialTheme = getTheme(DEFAULT_OPTIONS)
   const customTheme = {
+    Table: `
+      --data-table-library_grid-template-columns: 50% 25% 25%;
+    `,
     HeaderRow: `
       background-color: var(--secondary);
       color: var(--white);
@@ -44,7 +47,7 @@ function ManageInventory() {
         <HeaderMedium>Inventory</HeaderMedium>
 
         <div className="manage-table">
-          <CompactTable columns={columns} data={ingredientsData} theme={theme} layout={{ fixedHeader: true }} />
+          <CompactTable columns={columns} data={ingredientsData} theme={theme} layout={{ custom: true, fixedHeader: true }} />
         </div>
       </>
     )

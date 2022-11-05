@@ -20,8 +20,8 @@ function ManageSales() {
     {label: 'Timestamp', renderCell: (item) => item.timestamp},
     {
       label: 'Items Sold',
-      renderCell: (item) => 
-        item.menu_items_id.map((id, index, array) => {
+      renderCell: (item) => {
+        let itemsArray = item.menu_items_id.map((id, index, array) => {
           let name = ""
 
           for (let i = 0; i < Object.keys(menuData.data).length; ++i) {
@@ -30,13 +30,28 @@ function ManageSales() {
             }
           }
 
+          return name
+        })
+
+        let groupedItemsArray = []
+        
+        itemsArray.forEach(item => {
+          const index = groupedItemsArray.findIndex((x) => x.name === item)
+          if (index === -1) {
+            groupedItemsArray.push({ name: item, count: 1})
+          } else {
+            ++groupedItemsArray[index].count
+          }
+        })
+
+        return groupedItemsArray.map((item, index, array) => {
           if (index === array.length - 1) {
-            return name
+            return item.name + ' x' + item.count
           }
 
-          return name + ', '
+          return item.name + ' x' + item.count + ', '
         })
-      ,
+      },
     },
     {label: 'Total Price', renderCell: (item) => item.total_sales_price},
   ]
@@ -52,6 +67,9 @@ function ManageSales() {
 
   const materialTheme = getTheme(DEFAULT_OPTIONS)
   const customTheme = {
+    Table: `
+      --data-table-library_grid-template-columns: 15% 70% 15%;
+    `,
     HeaderRow: `
       background-color: var(--secondary);
       color: var(--white);
@@ -72,7 +90,7 @@ function ManageSales() {
         <HeaderMedium>Sales</HeaderMedium>
 
         <div className="manage-table">
-          <CompactTable columns={columns} data={salesData} theme={theme} layout={{ fixedHeader: true }} />
+          <CompactTable columns={columns} data={salesData} theme={theme} layout={{ custom: true, fixedHeader: true }} />
         </div>
       </>
     )
