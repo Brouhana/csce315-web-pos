@@ -33,7 +33,7 @@ function ManageInventory() {
       color: var(--white);
     `,
     Row: `
-      &:nth-child(odd) {
+      &:nth-of-type(odd) {
         background-color: var(--gray-0);
       }
     `,
@@ -48,7 +48,12 @@ function ManageInventory() {
         <HeaderMedium>Inventory</HeaderMedium>
 
         <div className="manage-table">
-          <CompactTable columns={columns} data={ingredientsData} theme={theme} layout={{ custom: true, fixedHeader: true }} />
+          <CompactTable 
+            columns={columns} 
+            data={ingredientsData} 
+            theme={theme} 
+            layout={{ custom: true, fixedHeader: true }} 
+          />
         </div>
       </>
     )

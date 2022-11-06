@@ -6,12 +6,14 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme'
 import { DEFAULT_OPTIONS, getTheme } from '@table-library/react-table-library/material-ui'
 import { usePagination } from '@table-library/react-table-library/pagination';
-import { Stack, TablePagination } from '@mui/material';
+import { Stack, TablePagination, TextField } from '@mui/material';
 import { useState } from "react";
 import Button from "../../../components/Button";
 
 function ManageSales() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [ isLoading, setIsLoading ] = useState(false)
+  const [ fromInput, setFromInput ] = useState("")
+  const [ toInput, setToInput ] = useState("")
 
   const fetchMenuItems = async () => {
     return await axios.get(`${SERVER_URL}/menu`)
@@ -81,7 +83,7 @@ function ManageSales() {
       color: var(--white);
     `,
     Row: `
-      &:nth-child(odd) {
+      &:nth-of-type(odd) {
         background-color: var(--gray-0);
       }
     `,
@@ -102,11 +104,30 @@ function ManageSales() {
     console.log(action, state);
   }
 
+  function filterSalesData(from, to) {
+    if (from && to) {
+      return salesRes.data.filter((item) => 
+        item.timestamp.toString() >= from && item.timestamp.toString() <= to
+      )
+    } else if (from) {
+      return salesRes.data.filter((item) => 
+        item.timestamp.toString() >= from
+      )
+    } else if (to) {
+      return salesRes.data.filter((item) => 
+        item.timestamp.toString() <= to
+      )
+    } 
+
+    return salesRes.data
+  }
+
   function renderTable() {
     setIsLoading(true)
 
     if (salesRes) {
-      setSalesData({ nodes: salesRes.data })
+      setSalesData({ nodes: filterSalesData(fromInput, toInput) })
+      pagination.fns.onSetPage(0)
       setIsLoading(false)
     }
   }
@@ -116,7 +137,13 @@ function ManageSales() {
       <HeaderMedium>Sales</HeaderMedium>
 
       <div className="manage-table">
-        <CompactTable columns={columns} data={salesData} theme={theme} layout={{ custom: true, fixedHeader: true }} pagination={pagination} />
+        <CompactTable 
+          columns={columns} 
+          data={salesData} 
+          theme={theme} 
+          layout={{ custom: true, fixedHeader: true }} 
+          pagination={pagination} 
+        />
       </div>
 
       <br />
@@ -134,14 +161,34 @@ function ManageSales() {
         </Stack>
       <br />
 
-      <Button
-        size="lg"
-        fullWidth
-        isLoading={isLoading}
-        onClick={() => renderTable()}
-      >
-        Render Table
-      </Button>
+      <Stack direction="row" spacing={2}>
+        <TextField 
+          id="from-field"
+          label="From"
+          fullWidth
+          placeholder={"YYYY-MM-DD"}
+          InputLabelProps={{ shrink: true }}
+          onChange={(event) => setFromInput(event.target.value)}
+        />
+
+        <TextField 
+          id="to-field"
+          label="To"
+          fullWidth
+          placeholder={"YYYY-MM-DD"}
+          InputLabelProps={{ shrink: true }}
+          onChange={(event) => setToInput(event.target.value)}
+        />
+
+        <Button
+          size="lg"
+          fullWidth
+          isLoading={isLoading}
+          onClick={() => renderTable()}
+        >
+          Render Table
+        </Button>
+      </Stack>
     </>
   )
 }
