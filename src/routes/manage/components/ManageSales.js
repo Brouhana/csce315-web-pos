@@ -74,7 +74,7 @@ function ManageSales() {
   const materialTheme = getTheme(DEFAULT_OPTIONS)
   const customTheme = {
     Table: `
-      --data-table-library_grid-template-columns: 15% 70% 15%;
+      --data-table-library_grid-template-columns: 10% 75% 15%;
     `,
     HeaderRow: `
       background-color: var(--secondary);
@@ -84,9 +84,6 @@ function ManageSales() {
       &:nth-child(odd) {
         background-color: var(--gray-0);
       }
-    `,
-    HeaderCell: `
-      
     `,
   }
   const theme = useTheme([materialTheme, customTheme])
