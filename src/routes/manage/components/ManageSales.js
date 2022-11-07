@@ -64,7 +64,7 @@ function ManageSales() {
     {label: 'Total Price', renderCell: (item) => item.total_sales_price},
   ]
 
-  const fetchSales = async () => {
+  async function fetchSales() {
     return await axios.get(`${SERVER_URL}/sales`)
   }
 

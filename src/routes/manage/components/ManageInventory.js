@@ -32,14 +32,26 @@ function ManageInventory() {
           style={{ width: '100%', border: 'none', fontSize: '1rem', padding: 0, margin: 0, backgroundColor: 'inherit' }}
           defaultValue={item.item_amount}
           tabIndex={0}
-          onKeyDown={(event) => handleUpdate(event, item.id)}
+          onKeyDown={(event) => handleKeyDown(event, item.id, item.storage_location)}
         />
       )
     },
-    {label: 'Storage Location', renderCell: (item) => item.storage_location.charAt(0).toUpperCase() + item.storage_location.slice(1)},
+    {
+      label: 'Storage Location',
+      renderCell: (item) => (
+        <select
+          style={{ width: '100%', border: 'none', fontSize: '1rem', padding: 0, margin: 0, backgroundColor: 'inherit' }}
+          defaultValue={item.storage_location.charAt(0).toUpperCase() + item.storage_location.slice(1)}
+          onChange={(event) => handleUpdate(event.target.value, item.id, item.item_amount)}
+        >
+          <option value="Cold">Cold</option>
+          <option value="Warm">Warm</option>
+        </select>
+      )
+    },
   ]
 
-  async function handleUpdate(event, id) {
+  async function handleKeyDown(event, id, storage) {
     if (event.key === 'Enter') {
       event.target.blur()
 
@@ -50,17 +62,32 @@ function ManageInventory() {
         id: intId,
         item_name: "",
         item_amount: intVal,
-        storage_location: ""
+        storage_location: storage
       })
+
+      renderTable()
     }
   } 
 
-  const fetchIngredients = async () => {
+  async function handleUpdate(value, id, amount) {
+    let intId = parseInt(id, 10)
+
+    await axios.put(`${SERVER_URL}/ingredients`, {
+      id: intId,
+      item_name: "",
+      item_amount: amount,
+      storage_location: value
+    })
+
+    renderTable()
+  } 
+
+  async function fetchIngredients() {
     return await axios.get(`${SERVER_URL}/ingredients`)
   }
 
   const { data: ingredientsRes } = useQuery(
-    'ingredients',
+    ['ingredients', ingredientsData],
     fetchIngredients,
   )
 
