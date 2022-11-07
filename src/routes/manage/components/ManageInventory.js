@@ -23,9 +23,36 @@ function ManageInventory() {
 
   const columns = [
     {label: 'Name', renderCell: (item) => item.item_name},
-    {label: 'Amount', renderCell: (item) => item.item_amount},
+    {
+      label: 'Amount',
+      renderCell: (item) => (
+        <input
+          type="text"
+          style={{ width: '100%', border: 'none', fontSize: '1rem', padding: 0, margin: 0, backgroundColor: 'inherit' }}
+          defaultValue={item.item_amount}
+          tabIndex={0}
+          onKeyDown={(event) => handleUpdate(event, item.id)}
+        />
+      )
+    },
     {label: 'Storage Location', renderCell: (item) => item.storage_location.charAt(0).toUpperCase() + item.storage_location.slice(1)},
   ]
+
+  async function handleUpdate(event, id) {
+    if (event.key === 'Enter') {
+      event.target.blur()
+
+      let intVal = parseInt(event.target.value, 10)
+      let intId = parseInt(id, 10)
+
+      await axios.put(`${SERVER_URL}/ingredients`, {
+        id: intId,
+        item_name: "",
+        item_amount: intVal,
+        storage_location: ""
+      })
+    }
+  } 
 
   const fetchIngredients = async () => {
     return await axios.get(`${SERVER_URL}/ingredients`)
@@ -50,6 +77,11 @@ function ManageInventory() {
         background-color: var(--gray-0);
       }
     `,
+    RowCell: `
+      .input {
+        background-color: inherit;
+      }
+    `,
   }
   const theme = useTheme([materialTheme, customTheme])
 
@@ -59,12 +91,14 @@ function ManageInventory() {
         item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
       ) 
     })
+
+    pagination.fns.onSetPage(0)
   }
 
   const pagination = usePagination(ingredientsData, {
     state: {
       page: 0,
-      size: 7,
+      size: 5,
     },
     onChange: onPaginationChange,
   })
@@ -83,9 +117,9 @@ function ManageInventory() {
         item_amount: parseInt(amountInput, 10),
         storage_location: storageInput
       })
-
-      setIsLoading(false)
     }
+
+    setIsLoading(false)
   }
 
   async function renderTable() {
