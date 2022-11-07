@@ -53,14 +53,10 @@ function ManageInventory() {
   }
   const theme = useTheme([materialTheme, customTheme])
 
-  const [ search, setSearch ] = useState("")
-
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-
+  function handleSearch(event) {
     setIngredientsData({ 
       nodes: ingredientsRes.data.filter((item) => 
-        item.item_name.toLowerCase().includes(search.toLowerCase())
+        item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
       ) 
     })
   }
@@ -109,7 +105,7 @@ function ManageInventory() {
       <HeaderMedium>Inventory</HeaderMedium>
 
       <Stack spacing={10}>
-        <TextField label="Search Ingredients" value={search} icon={<FaSearch />} onChange={handleSearch} size="small" />
+        <TextField label="Search Ingredients" icon={<FaSearch />} onChange={(event) => handleSearch(event)} size="small" />
       </Stack>
 
       <br />
