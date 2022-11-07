@@ -1,34 +1,33 @@
-import { LabelMedium } from '../../../components/typography/Label'
+import { useContext } from 'react'
 import { MdRemove } from 'react-icons/md'
 import { useSnackbar } from 'react-simple-snackbar'
 
-function CheckoutItem({ name, price, count }) {
-  const options = {
-    position: 'bottom',
-    style: {
-      backgroundColor: 'var(--black)',
-      color: 'var(--white)',
-      fontFamily: 'Inter',
-      fontSize: '18px',
-      padding: '6px',
-      textAlign: 'left',
-      fontWeight: 600,
-      borderRadius: '6px',
-      marginLeft: '12px',
-    },
-    closeStyle: {
-      fontSize: '16px',
-    },
-  }
+import { LabelMedium } from '../../../components/typography/Label'
+import { SNACKBAR_STYLE } from '../../../constants'
+import { CheckoutCartContext } from '../../../contexts/CheckoutCartContext'
 
-  const [openSnackbar, closeSnackbar] = useSnackbar(options)
+function CheckoutItem({ id, name, price, count }) {
+  const [openSnackbar] = useSnackbar(SNACKBAR_STYLE)
+  const { checkoutCartItems, setCheckoutCartItems } = useContext(
+    CheckoutCartContext,
+  )
 
   function handleRemove() {
+    const itemIndex = checkoutCartItems.findIndex((e) => e.id === id)
+
+    setCheckoutCartItems([
+      ...checkoutCartItems.slice(0, itemIndex),
+      ...checkoutCartItems.slice(itemIndex + 1),
+    ])
+
     openSnackbar(`Removed ×1 ${name}`)
   }
 
+  price = price.toFixed(2)
+  const groupedPrice = (price * count).toFixed(2)
+
   return (
-    <div class="checkout-cart-item">
+    <div className="checkout-cart-item">
       <div>
         <LabelMedium style={{ fontWeight: 600, marginBottom: '3px' }}>
           <span style={{ color: '#3e3e3e' }}>{count > 1 && `×${count} `}</span>
@@ -36,11 +35,9 @@ function CheckoutItem({ name, price, count }) {
         </LabelMedium>
         <LabelMedium style={{ color: '#3e3e3e' }}>
           {count > 1 && (
-            <div className="checkout-cart-item-badge">
-              ${(price * count).toFixed(2)}
-            </div>
+            <div className="checkout-cart-item-badge">${price}</div>
           )}
-          ${price}
+          ${count > 1 ? groupedPrice : price}
         </LabelMedium>
       </div>
       <div style={{ marginLeft: 'auto' }}>

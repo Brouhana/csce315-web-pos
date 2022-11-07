@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { useQuery } from 'react-query'
-import { SERVER_URL } from '../../../constants'
+
 import SideNav from '../../../components/side-nav/SideNav'
+import { SERVER_URL } from '../../../constants'
 
 function CheckoutSideNav() {
   let menuCategories = []
@@ -10,10 +11,11 @@ function CheckoutSideNav() {
     return await axios.get(`${SERVER_URL}/menu`)
   }
 
-  const { isLoading, isError, data: menuData, error } = useQuery(
-    'menuItems',
-    fetchMenuItems,
-  )
+  const {
+    isLoading: menuIsLoading,
+    isError: menuIsError,
+    data: menuData,
+  } = useQuery('menuItems', fetchMenuItems)
 
   if (menuData) {
     menuCategories.push(
@@ -22,12 +24,12 @@ function CheckoutSideNav() {
       }),
     )
     menuCategories = Array.from(new Set(menuCategories[0]))
-    menuCategories = ['All', ...menuCategories]
+    menuCategories = ['All', ...menuCategories.sort()]
   }
 
-  if (menuData) {
-    return <SideNav items={menuCategories} />
-  }
+  if (menuIsError) console.error('Error getting menu data')
+
+  return <SideNav items={menuCategories} itemsIsLoading={menuIsLoading} />
 }
 
 export default CheckoutSideNav

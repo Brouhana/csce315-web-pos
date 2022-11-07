@@ -1,7 +1,15 @@
 import Spinner from './Spinner'
 
-function Button({ size, fullWidth, isLoading, onClick, children }) {
-  let buttonClass = 'btn btn-primary'
+function Button({
+  size,
+  type,
+  fullWidth,
+  isLoading,
+  onClick,
+  disabled,
+  children,
+}) {
+  let buttonClass = 'btn'
 
   buttonClass = fullWidth ? buttonClass + ' btn-full' : buttonClass
 
@@ -14,17 +22,22 @@ function Button({ size, fullWidth, isLoading, onClick, children }) {
       break
   }
 
-  if (isLoading) {
-    return (
-      <button type="button" onClick={onClick} className={buttonClass} disabled>
-        <Spinner />
-      </button>
-    )
+  switch (type) {
+    case 'secondary':
+      buttonClass += ' btn-secondary'
+      break
+    default:
+      buttonClass += ' btn-primary'
   }
 
   return (
-    <button type="button" onClick={onClick} className={buttonClass}>
-      {children}
+    <button
+      type="button"
+      onClick={onClick}
+      className={buttonClass}
+      disabled={disabled || isLoading}
+    >
+      {isLoading ? <Spinner /> : children}
     </button>
   )
 }
