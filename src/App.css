@@ -404,3 +404,11 @@
     transform: rotate(360deg);
   }
 }
+
+/* Manager Tables */
+
+.manage-table {
+  overflow: auto;
+  border-radius: 10px;
+  box-shadow: 0px 2px 5px 0.5px rgb(0 0 0 / 18%);
+}
