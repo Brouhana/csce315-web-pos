@@ -19,6 +19,7 @@ function ManageInventory() {
   const [ amountInput, setAmountInput ] = useState(0)
   const [ storageInput, setStorageInput ] = useState("")
 
+  const [ newResponse, setNewResponse ] = useState([])
   const [ ingredientsData, setIngredientsData ] = useState({ nodes: [] })
 
   const columns = [
@@ -86,11 +87,19 @@ function ManageInventory() {
   const theme = useTheme([materialTheme, customTheme])
 
   function handleSearch(event) {
-    setIngredientsData({ 
-      nodes: ingredientsRes.data.filter((item) => 
-        item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
-      ) 
-    })
+    if (newResponse) {
+      setIngredientsData({ 
+        nodes: newResponse.data.filter((item) => 
+          item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
+        ) 
+      })
+    } else {
+      setIngredientsData({ 
+        nodes: ingredientsRes.data.filter((item) => 
+          item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
+        ) 
+      })
+    }
 
     pagination.fns.onSetPage(0)
   }
@@ -128,6 +137,7 @@ function ManageInventory() {
     let ingredientsRes = await axios.get(`${SERVER_URL}/ingredients`)
 
     if (ingredientsRes) {
+      setNewResponse(ingredientsRes)
       setIngredientsData({ nodes: ingredientsRes.data })
       pagination.fns.onSetPage(0)
       setIsRendering(false)
