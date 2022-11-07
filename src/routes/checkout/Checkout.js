@@ -14,11 +14,11 @@ function Checkout() {
     >
       <Container fluid>
         <Row>
-          <Col md={2.5}>
+          <Col md={2}>
             <br />
             <CheckoutSideNav />
           </Col>
-          <Col md={6}>
+          <Col md={6.5}>
             <br />
             <Outlet />
           </Col>
