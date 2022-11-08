@@ -18,3 +18,22 @@ export const SNACKBAR_STYLE = {
     display: 'none',
   },
 }
+export const INVENTORY_THEME = {
+  Table: `
+    --data-table-library_grid-template-columns: 50% 25% 25%;
+  `,
+  HeaderRow: `
+    background-color: var(--secondary);
+    color: var(--white);
+  `,
+  Row: `
+    &:nth-of-type(odd) {
+      background-color: var(--gray-0);
+    }
+  `,
+  RowCell: `
+    .input {
+      background-color: inherit;
+    }
+  `,
+}
