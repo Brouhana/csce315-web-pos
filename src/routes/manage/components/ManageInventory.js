@@ -5,6 +5,7 @@ import { useTheme } from '@table-library/react-table-library/theme'
 import { DEFAULT_OPTIONS, getTheme } from '@table-library/react-table-library/material-ui'
 import { Stack, TextField } from '@mui/material';
 import { useEffect, useState } from "react";
+import { usePagination } from '@table-library/react-table-library/pagination';
 import Button from "../../../components/Button";
 import ManageTable from "./ManageTable";
 
@@ -53,6 +54,13 @@ function ManageInventory() {
 
   const materialTheme = getTheme(DEFAULT_OPTIONS)
   const theme = useTheme([materialTheme, INVENTORY_THEME])
+
+  const pagination = usePagination(displayedData, {
+    state: {
+      page: 0,
+      size: 5,
+    },
+  })
 
   async function renderTable() {
     let ingredientsRes = await axios.get(`${SERVER_URL}/ingredients`)
@@ -117,7 +125,6 @@ function ManageInventory() {
 
       <ManageTable 
         searchProps={{
-          render: true,
           name: "Ingredients",
           property: "item_name",
           data: storedData,
@@ -126,6 +133,7 @@ function ManageInventory() {
         columns={columns}
         displayedData={displayedData}
         theme={theme}
+        pagination={pagination}
       />
 
       <Stack direction="row" spacing={2}>

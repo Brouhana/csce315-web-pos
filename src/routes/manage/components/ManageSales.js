@@ -6,6 +6,7 @@ import { DEFAULT_OPTIONS, getTheme } from '@table-library/react-table-library/ma
 import { Stack, TextField } from '@mui/material';
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { usePagination } from '@table-library/react-table-library/pagination';
 import Button from "../../../components/Button";
 import ManageTable from "./ManageTable";
 
@@ -74,6 +75,13 @@ function ManageSales() {
   const materialTheme = getTheme(DEFAULT_OPTIONS)
   const theme = useTheme([materialTheme, SALES_THEME])
 
+  const pagination = usePagination(displayedData, {
+    state: {
+      page: 0,
+      size: 5,
+    },
+  })
+
   async function renderTable() {
     if (storedData.nodes.length === 0) {
       let salesRes = await axios.get(`${SERVER_URL}/sales`)
@@ -86,6 +94,7 @@ function ManageSales() {
       setIsLoading(true)
 
       setDisplayedData({ nodes: filterSalesData(fromInput, toInput) })
+      pagination.fns.onSetPage(0)
 
       setIsLoading(false)
     }
@@ -117,6 +126,7 @@ function ManageSales() {
         columns={columns}
         displayedData={displayedData}
         theme={theme}
+        pagination={pagination}
       />
 
       <Stack direction="row" spacing={2}>

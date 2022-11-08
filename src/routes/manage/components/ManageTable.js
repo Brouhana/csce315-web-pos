@@ -1,9 +1,8 @@
 import { CompactTable } from '@table-library/react-table-library/compact';
-import { usePagination } from '@table-library/react-table-library/pagination';
 import { Stack, TablePagination } from '@mui/material';
 import ManageSearch from "./ManageSearch";
 
-function ManageTable({searchProps, columns, displayedData, theme }) {
+function ManageTable({ searchProps, columns, displayedData, theme, pagination }) {
   function renderSearch() {
     if (searchProps) {
       return(
@@ -11,13 +10,6 @@ function ManageTable({searchProps, columns, displayedData, theme }) {
       )
     }
   }
-
-  const pagination = usePagination(displayedData, {
-    state: {
-      page: 0,
-      size: 5,
-    },
-  })
 
   return(
     <>
