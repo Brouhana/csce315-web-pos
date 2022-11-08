@@ -1,26 +1,27 @@
 import { HeaderMedium } from "../../../components/typography/Header";
 import axios from 'axios'
-import { SERVER_URL } from '../../../constants'
-import { useQuery } from 'react-query'
-import { CompactTable } from '@table-library/react-table-library/compact';
+import { INVENTORY_THEME, SERVER_URL } from '../../../constants'
 import { useTheme } from '@table-library/react-table-library/theme'
 import { DEFAULT_OPTIONS, getTheme } from '@table-library/react-table-library/material-ui'
+import { Stack, TextField } from '@mui/material';
+import { useEffect, useState } from "react";
 import { usePagination } from '@table-library/react-table-library/pagination';
-import { Stack, TablePagination, TextField } from '@mui/material';
-import { useState } from "react";
 import Button from "../../../components/Button";
-import { FaSearch } from 'react-icons/fa';
+import ManageTable from "./ManageTable";
 
 function ManageInventory() {
   const [ isLoading, setIsLoading ] = useState(false)
-  const [ isRendering, setIsRendering ] = useState(false)
 
   const [ nameInput, setNameInput ] = useState("")
   const [ amountInput, setAmountInput ] = useState(0)
   const [ storageInput, setStorageInput ] = useState("")
 
-  const [ newResponse, setNewResponse ] = useState([])
-  const [ ingredientsData, setIngredientsData ] = useState({ nodes: [] })
+  const [ storedData, setStoredData ] = useState({ nodes: [] })
+  const [ displayedData, setDisplayedData ] = useState({ nodes: [] })
+
+  useEffect(() => {
+    renderTable()
+  }, [])
 
   const columns = [
     {label: 'Name', renderCell: (item) => item.item_name},
@@ -32,14 +33,45 @@ function ManageInventory() {
           style={{ width: '100%', border: 'none', fontSize: '1rem', padding: 0, margin: 0, backgroundColor: 'inherit' }}
           defaultValue={item.item_amount}
           tabIndex={0}
-          onKeyDown={(event) => handleUpdate(event, item.id)}
+          onKeyDown={(event) => handleKeyDown(event, item.id, item.storage_location)}
         />
       )
     },
-    {label: 'Storage Location', renderCell: (item) => item.storage_location.charAt(0).toUpperCase() + item.storage_location.slice(1)},
+    {
+      label: 'Storage Location',
+      renderCell: (item) => (
+        <select
+          style={{ width: '100%', border: 'none', fontSize: '1rem', padding: 0, margin: 0, backgroundColor: 'inherit' }}
+          defaultValue={item.storage_location.charAt(0).toUpperCase() + item.storage_location.slice(1)}
+          onChange={(event) => handleUpdate(event.target.value, item.id, item.item_amount)}
+        >
+          <option value="Cold">Cold</option>
+          <option value="Warm">Warm</option>
+        </select>
+      )
+    },
   ]
 
-  async function handleUpdate(event, id) {
+  const materialTheme = getTheme(DEFAULT_OPTIONS)
+  const theme = useTheme([materialTheme, INVENTORY_THEME])
+
+  const pagination = usePagination(displayedData, {
+    state: {
+      page: 0,
+      size: 5,
+    },
+  })
+
+  async function renderTable() {
+    let ingredientsRes = await axios.get(`${SERVER_URL}/ingredients`)
+
+    if (ingredientsRes) {
+      setDisplayedData({ nodes: ingredientsRes.data })
+      setStoredData({ nodes: ingredientsRes.data })
+    }
+  }
+
+  async function handleKeyDown(event, id, storage) {
     if (event.key === 'Enter') {
       event.target.blur()
 
@@ -50,71 +82,25 @@ function ManageInventory() {
         id: intId,
         item_name: "",
         item_amount: intVal,
-        storage_location: ""
+        storage_location: storage
       })
+
+      renderTable()
     }
   } 
 
-  const fetchIngredients = async () => {
-    return await axios.get(`${SERVER_URL}/ingredients`)
-  }
+  async function handleUpdate(value, id, amount) {
+    let intId = parseInt(id, 10)
 
-  const { data: ingredientsRes } = useQuery(
-    'ingredients',
-    fetchIngredients,
-  )
+    await axios.put(`${SERVER_URL}/ingredients`, {
+      id: intId,
+      item_name: "",
+      item_amount: amount,
+      storage_location: value
+    })
 
-  const materialTheme = getTheme(DEFAULT_OPTIONS)
-  const customTheme = {
-    Table: `
-      --data-table-library_grid-template-columns: 50% 25% 25%;
-    `,
-    HeaderRow: `
-      background-color: var(--secondary);
-      color: var(--white);
-    `,
-    Row: `
-      &:nth-of-type(odd) {
-        background-color: var(--gray-0);
-      }
-    `,
-    RowCell: `
-      .input {
-        background-color: inherit;
-      }
-    `,
-  }
-  const theme = useTheme([materialTheme, customTheme])
-
-  function handleSearch(event) {
-    if (newResponse) {
-      setIngredientsData({ 
-        nodes: newResponse.data.filter((item) => 
-          item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
-        ) 
-      })
-    } else {
-      setIngredientsData({ 
-        nodes: ingredientsRes.data.filter((item) => 
-          item.item_name.toLowerCase().includes(event.target.value.toLowerCase())
-        ) 
-      })
-    }
-
-    pagination.fns.onSetPage(0)
-  }
-
-  const pagination = usePagination(ingredientsData, {
-    state: {
-      page: 0,
-      size: 5,
-    },
-    onChange: onPaginationChange,
-  })
-
-  function onPaginationChange(action, state) {
-    console.log(action, state);
-  }
+    renderTable()
+  } 
 
   async function updateInventory() {
     setIsLoading(true)
@@ -126,58 +112,29 @@ function ManageInventory() {
         item_amount: parseInt(amountInput, 10),
         storage_location: storageInput
       })
+
+      renderTable()
     }
 
     setIsLoading(false)
   }
 
-  async function renderTable() {
-    setIsRendering(true)
-
-    let ingredientsRes = await axios.get(`${SERVER_URL}/ingredients`)
-
-    if (ingredientsRes) {
-      setNewResponse(ingredientsRes)
-      setIngredientsData({ nodes: ingredientsRes.data })
-      pagination.fns.onSetPage(0)
-      setIsRendering(false)
-    }
-  }
-
-  return (
+  return(
     <>
       <HeaderMedium>Inventory</HeaderMedium>
 
-      <Stack spacing={10}>
-        <TextField label="Search Ingredients" icon={<FaSearch />} onChange={(event) => handleSearch(event)} size="small" />
-      </Stack>
-
-      <br />
-
-      <div className="manage-table">
-        <CompactTable 
-          columns={columns} 
-          data={ingredientsData} 
-          theme={theme} 
-          layout={{ custom: true, fixedHeader: true }} 
-          pagination={pagination} 
-        />
-      </div>
-
-      <br />
-        <Stack spacing={10}>
-          <TablePagination
-            count={ingredientsData.nodes.length}
-            page={pagination.state.page}
-            rowsPerPage={pagination.state.size}
-            rowsPerPageOptions={[1, 2, 5, 7]}
-            onRowsPerPageChange={(event) =>
-              pagination.fns.onSetSize(parseInt(event.target.value, 10))
-            }
-            onPageChange={(event, page) => pagination.fns.onSetPage(page)}
-          />
-        </Stack>
-      <br />
+      <ManageTable 
+        searchProps={{
+          name: "Ingredients",
+          property: "item_name",
+          data: storedData,
+          setData: setDisplayedData,
+        }}
+        columns={columns}
+        displayedData={displayedData}
+        theme={theme}
+        pagination={pagination}
+      />
 
       <Stack direction="row" spacing={2}>
         <TextField 
@@ -216,17 +173,6 @@ function ManageInventory() {
           Add Ingredient
         </Button>
       </Stack>
-
-      <br />
-
-      <Button
-        size="md"
-        fullWidth
-        isLoading={isRendering}
-        onClick={() => renderTable()}
-      >
-        Render Table
-      </Button>
     </>
   )
 }
