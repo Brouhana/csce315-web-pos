@@ -37,3 +37,17 @@ export const INVENTORY_THEME = {
     }
   `,
 }
+export const SALES_THEME = {
+  Table: `
+    --data-table-library_grid-template-columns: 10% 75% 15%;
+  `,
+  HeaderRow: `
+    background-color: var(--secondary);
+    color: var(--white);
+  `,
+  Row: `
+    &:nth-of-type(odd) {
+      background-color: var(--gray-0);
+    }
+  `,
+}

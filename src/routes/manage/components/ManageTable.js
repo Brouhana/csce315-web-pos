@@ -5,7 +5,7 @@ import ManageSearch from "./ManageSearch";
 
 function ManageTable({searchProps, columns, displayedData, theme }) {
   function renderSearch() {
-    if (searchProps.render) {
+    if (searchProps) {
       return(
         <ManageSearch name={searchProps.name} property={searchProps.property} data={searchProps.data} setData={searchProps.setData} pagination={pagination} />  
       )

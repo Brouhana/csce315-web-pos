@@ -1,19 +1,22 @@
 import { HeaderMedium } from "../../../components/typography/Header";
 import axios from 'axios'
-import { SERVER_URL } from '../../../constants'
-import { useQuery } from 'react-query'
-import { CompactTable } from '@table-library/react-table-library/compact';
+import { SALES_THEME, SERVER_URL } from '../../../constants'
 import { useTheme } from '@table-library/react-table-library/theme'
 import { DEFAULT_OPTIONS, getTheme } from '@table-library/react-table-library/material-ui'
-import { usePagination } from '@table-library/react-table-library/pagination';
-import { Stack, TablePagination, TextField } from '@mui/material';
-import { useState } from "react";
+import { Stack, TextField } from '@mui/material';
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import Button from "../../../components/Button";
+import ManageTable from "./ManageTable";
 
 function ManageSales() {
   const [ isLoading, setIsLoading ] = useState(false)
+
   const [ fromInput, setFromInput ] = useState("")
   const [ toInput, setToInput ] = useState("")
+  
+  const [ storedData, setStoredData ] = useState({ nodes: [] })
+  const [ displayedData, setDisplayedData ] = useState({ nodes: [] })
 
   const fetchMenuItems = async () => {
     return await axios.get(`${SERVER_URL}/menu`)
@@ -23,6 +26,10 @@ function ManageSales() {
     'menuItems',
     fetchMenuItems,
   )
+
+  useEffect(() => {
+    renderTable()
+  }, [])
 
   const columns = [
     {label: 'Timestamp', renderCell: (item) => item.timestamp},
@@ -64,102 +71,53 @@ function ManageSales() {
     {label: 'Total Price', renderCell: (item) => item.total_sales_price},
   ]
 
-  async function fetchSales() {
-    return await axios.get(`${SERVER_URL}/sales`)
-  }
-
-  const { data: salesRes } = useQuery(
-    'sales',
-    fetchSales,
-  )
-
   const materialTheme = getTheme(DEFAULT_OPTIONS)
-  const customTheme = {
-    Table: `
-      --data-table-library_grid-template-columns: 10% 75% 15%;
-    `,
-    HeaderRow: `
-      background-color: var(--secondary);
-      color: var(--white);
-    `,
-    Row: `
-      &:nth-of-type(odd) {
-        background-color: var(--gray-0);
+  const theme = useTheme([materialTheme, SALES_THEME])
+
+  async function renderTable() {
+    if (storedData.nodes.length === 0) {
+      let salesRes = await axios.get(`${SERVER_URL}/sales`)
+
+      if (salesRes) {
+        setDisplayedData({ nodes: salesRes.data })
+        setStoredData({ nodes: salesRes.data })
       }
-    `,
-  }
-  const theme = useTheme([materialTheme, customTheme])
+    } else {
+      setIsLoading(true)
 
-  const [ salesData, setSalesData ] = useState({ nodes: [] })
+      setDisplayedData({ nodes: filterSalesData(fromInput, toInput) })
 
-  const pagination = usePagination(salesData, {
-    state: {
-      page: 0,
-      size: 7,
-    },
-    onChange: onPaginationChange,
-  })
-
-  function onPaginationChange(action, state) {
-    console.log(action, state);
-  }
+      setIsLoading(false)
+    }
+  } 
 
   function filterSalesData(from, to) {
     if (from && to) {
-      return salesRes.data.filter((item) => 
+      return storedData.nodes.filter((item) => 
         item.timestamp.toString() >= from && item.timestamp.toString() <= to
       )
     } else if (from) {
-      return salesRes.data.filter((item) => 
+      return storedData.nodes.filter((item) => 
         item.timestamp.toString() >= from
       )
     } else if (to) {
-      return salesRes.data.filter((item) => 
+      return storedData.nodes.filter((item) => 
         item.timestamp.toString() <= to
       )
     } 
 
-    return salesRes.data
+    return storedData.nodes
   }
 
-  function renderTable() {
-    setIsLoading(true)
-
-    if (salesRes) {
-      setSalesData({ nodes: filterSalesData(fromInput, toInput) })
-      pagination.fns.onSetPage(0)
-      setIsLoading(false)
-    }
-  }
-
-  return (
+  return(
     <>
       <HeaderMedium>Sales</HeaderMedium>
 
-      <div className="manage-table">
-        <CompactTable 
-          columns={columns} 
-          data={salesData} 
-          theme={theme} 
-          layout={{ custom: true, fixedHeader: true }} 
-          pagination={pagination} 
-        />
-      </div>
-
-      <br />
-        <Stack spacing={10}>
-          <TablePagination
-            count={salesData.nodes.length}
-            page={pagination.state.page}
-            rowsPerPage={pagination.state.size}
-            rowsPerPageOptions={[1, 2, 5, 7]}
-            onRowsPerPageChange={(event) =>
-              pagination.fns.onSetSize(parseInt(event.target.value, 10))
-            }
-            onPageChange={(event, page) => pagination.fns.onSetPage(page)}
-          />
-        </Stack>
-      <br />
+      <ManageTable 
+        columns={columns}
+        displayedData={displayedData}
+        theme={theme}
+      />
 
       <Stack direction="row" spacing={2}>
         <TextField 
