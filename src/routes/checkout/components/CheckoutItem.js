@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import FadeIn from 'react-fade-in'
 import { MdRemove } from 'react-icons/md'
 import { useSnackbar } from 'react-simple-snackbar'
 
@@ -27,36 +28,38 @@ function CheckoutItem({ id, name, price, count }) {
   const groupedPrice = (price * count).toFixed(2)
 
   return (
-    <div className="checkout-cart-item">
-      <div>
-        <LabelMedium style={{ fontWeight: 600 }}>
-          <div
-            className="checkout-cart-item-badge"
-            style={{ marginRight: '8px' }}
-          >
-            ×{count}
-          </div>
-          {name}
-        </LabelMedium>
-      </div>
-      <div
-        style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
-      >
-        <div style={{ marginRight: '5px' }}>
-          <LabelMedium style={{ color: '#3e3e3e' }}>
-            ${groupedPrice}
+    <FadeIn>
+      <div className="checkout-cart-item">
+        <div>
+          <LabelMedium style={{ fontWeight: 600 }}>
+            <div
+              className="checkout-cart-item-badge"
+              style={{ marginRight: '8px' }}
+            >
+              ×{count}
+            </div>
+            {name}
           </LabelMedium>
         </div>
-        <div style={{ marginLeft: '5px' }}>
-          <button
-            className="checkout-remove-item-button"
-            onClick={() => handleRemove()}
-          >
-            <MdRemove className="checkout-item-icon" />
-          </button>
+        <div
+          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
+        >
+          <div style={{ marginRight: '5px' }}>
+            <LabelMedium style={{ color: '#3e3e3e' }}>
+              ${groupedPrice}
+            </LabelMedium>
+          </div>
+          <div style={{ marginLeft: '5px' }}>
+            <button
+              className="checkout-remove-item-button"
+              onClick={() => handleRemove()}
+            >
+              <MdRemove className="checkout-item-icon" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </FadeIn>
   )
 }
 
