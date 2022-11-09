@@ -29,24 +29,32 @@ function CheckoutItem({ id, name, price, count }) {
   return (
     <div className="checkout-cart-item">
       <div>
-        <LabelMedium style={{ fontWeight: 600, marginBottom: '3px' }}>
-          <span style={{ color: '#3e3e3e' }}>{count > 1 && `×${count} `}</span>
+        <LabelMedium style={{ fontWeight: 600 }}>
+          <div
+            className="checkout-cart-item-badge"
+            style={{ marginRight: '8px' }}
+          >
+            ×{count}
+          </div>
           {name}
         </LabelMedium>
-        <LabelMedium style={{ color: '#3e3e3e' }}>
-          {count > 1 && (
-            <div className="checkout-cart-item-badge">${price}</div>
-          )}
-          ${count > 1 ? groupedPrice : price}
-        </LabelMedium>
       </div>
-      <div style={{ marginLeft: 'auto' }}>
-        <button
-          className="checkout-remove-item-button"
-          onClick={() => handleRemove()}
-        >
-          <MdRemove className="checkout-item-icon" />
-        </button>
+      <div
+        style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
+      >
+        <div style={{ marginRight: '5px' }}>
+          <LabelMedium style={{ color: '#3e3e3e' }}>
+            ${groupedPrice}
+          </LabelMedium>
+        </div>
+        <div style={{ marginLeft: '5px' }}>
+          <button
+            className="checkout-remove-item-button"
+            onClick={() => handleRemove()}
+          >
+            <MdRemove className="checkout-item-icon" />
+          </button>
+        </div>
       </div>
     </div>
   )

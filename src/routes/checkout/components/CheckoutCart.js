@@ -1,16 +1,16 @@
+import axios from 'axios'
 import { useContext, useState } from 'react'
 import { MdAddShoppingCart } from 'react-icons/md'
 import { useSnackbar } from 'react-simple-snackbar'
 import useSound from 'use-sound'
-import axios from 'axios'
 
 import Button from '../../../components/Button'
 import { LabelLarge, LabelMedium } from '../../../components/typography/Label'
-import CheckoutItem from './CheckoutItem'
-import { CheckoutCartContext } from '../../../contexts/CheckoutCartContext'
 import { SERVER_URL, TX_SALES_TAX } from '../../../constants'
 import { SNACKBAR_STYLE } from '../../../constants'
+import { CheckoutCartContext } from '../../../contexts/CheckoutCartContext'
 import purchaseSfx from '../../../sounds/purchase.mp3'
+import CheckoutItem from './CheckoutItem'
 
 function CheckoutCart() {
   const [isLoading, setIsLoading] = useState(false)
@@ -49,26 +49,22 @@ function CheckoutCart() {
         return item.id
       }),
       employee_id: 1,
-      id: 4044,
-      timestamp: '2022-10-18',
       total_sales_price: grandTotal,
     }
 
-    // const result = await axios.post(`${SERVER_URL}/sales`, payload, config)
+    const result = await axios.post(`${SERVER_URL}/sales`, payload, config)
 
-    // if (result.status === 200) {
-    setTimeout(() => {
+    if (result.status === 200) {
       play()
       setCheckoutCartItems([])
       setIsLoading(false)
       openSnackbar('Order Created')
-    }, 1600)
-    // }
+    }
 
-    // if (result.status !== 200) {
-    //   setIsLoading(false)
-    //   console.error('Error adding sale')
-    // }
+    if (result.status !== 200) {
+      setIsLoading(false)
+      console.error('Error adding sale')
+    }
   }
 
   function handleClear() {
