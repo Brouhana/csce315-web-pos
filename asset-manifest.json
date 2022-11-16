@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/brouhana/P3_315/static/css/main.f53c4435.css",
+    "main.js": "/brouhana/P3_315/static/js/main.f638d458.js",
+    "static/js/845.55157a85.chunk.js": "/brouhana/P3_315/static/js/845.55157a85.chunk.js",
+    "static/media/purchase.mp3": "/brouhana/P3_315/static/media/purchase.5f1fee46481f6a9e2585.mp3",
+    "index.html": "/brouhana/P3_315/index.html",
+    "main.f53c4435.css.map": "/brouhana/P3_315/static/css/main.f53c4435.css.map",
+    "main.f638d458.js.map": "/brouhana/P3_315/static/js/main.f638d458.js.map",
+    "845.55157a85.chunk.js.map": "/brouhana/P3_315/static/js/845.55157a85.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f53c4435.css",
+    "static/js/main.f638d458.js"
+  ]
+}
